@@ -14,6 +14,10 @@ var ballY = 75
 var ballSpeedX = 5;
 var ballSpeedY = 7;
 
+const BRICK_W = 100;
+const BRICK_H = 50;
+const BRICK_COUNT = 4;
+
 const PADDLE_WIDTH = 100;
 const PADDLE_THICKNESS = 10;
 const PADDLE_DIST_FROM_EDGE = 60;
@@ -21,12 +25,14 @@ var paddleX = 400;
 
 var canvas, canvasContext;
 
+var mouseX, mouseY;
+
 function updateMousePos(evt) {
 	var rect = canvas.getBoundingClientRect();
 	var root = document.documentElement;
 
-	var mouseX = evt.clientX - rect.left - root.scrollLeft;
-	// var mouseY = evt.clientX - rect.topo - root.scrollTop;
+	mouseX = evt.clientX - rect.left - root.scrollLeft;
+	mouseY = evt.clientY - rect.top - root.scrollTop;
 
 	paddleX = mouseX - PADDLE_WIDTH/2;
 }
@@ -68,6 +74,7 @@ function moveAll() {
 		ballReset();
     }
 
+	// Ball hits paddle
 	var paddleTopEdgeY = canvas.height-PADDLE_DIST_FROM_EDGE;
 	var paddleBottomEdgeY = paddleTopEdgeY + PADDLE_THICKNESS;
 	var paddleLeftEdgeX = paddleX;
@@ -77,6 +84,10 @@ function moveAll() {
 		ballX > paddleLeftEdgeX && // right of the left side of paddle
 		ballX < paddleRightEdgeX) { // left of the left side of paddle
 		ballSpeedY *= -1;
+
+		var centerOfPadelX = paddleX + PADDLE_WIDTH/2;
+		var ballDistFromCenterX = ballX - centerOfPadelX;
+		ballSpeedX = ballDistFromCenterX * 0.35; // 35% dilution
 	}
 }
 
@@ -87,9 +98,15 @@ function drawAll() {
 
 	colorRect(paddleX,canvas.height - PADDLE_DIST_FROM_EDGE,
 				PADDLE_WIDTH,PADDLE_THICKNESS, 'white'); // draw paddle
+
+	colorText(mouseX+","+mouseY, 5,canvas.height-5, 'yellow');
+
+	drawBricks();
 }
 
-
+function drawBricks() {
+	
+}
 
 function colorRect(topLeftX,topLeftY, boxWidth,boxHeight, fillColor) {
     canvasContext.fillStyle = fillColor;
@@ -101,6 +118,11 @@ function colorBall(centerX,centerY, radius, fillColor) {
     canvasContext.beginPath();
     canvasContext.arc(centerX,centerY, radius, 0,Math.PI*2,true);
     canvasContext.fill();
+}
+
+function colorText(showWords, textX,textY, fillColor) {
+	canvasContext.fillStyle = fillColor;
+	canvasContext.fillText(showWords, textX,textY);
 }
 
 </script>
